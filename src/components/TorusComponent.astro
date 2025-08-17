@@ -5,25 +5,179 @@
 <!-- 3D场景容器 -->
 <div id="torus-container" style="width: 100%; height: 100vh;"></div>
 
-<!-- 浮动菜单 -->
-<div id="model-menu" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.7); padding: 15px 20px; border-radius: 25px; backdrop-filter: blur(10px); z-index: 1000; display: flex; gap: 10px; align-items: center;">
-  <span style="color: white; font-size: 14px; margin-right: 10px;">选择模型:</span>
-  <button class="model-btn active" data-model="torus" style="background: #4CAF50; color: white; border: none; padding: 8px 16px; border-radius: 15px; cursor: pointer; font-size: 12px; transition: all 0.3s ease;">圆环</button>
-  <button class="model-btn" data-model="sphere" style="background: rgba(255, 255, 255, 0.2); color: white; border: none; padding: 8px 16px; border-radius: 15px; cursor: pointer; font-size: 12px; transition: all 0.3s ease;">球体</button>
-  <button class="model-btn" data-model="cube" style="background: rgba(255, 255, 255, 0.2); color: white; border: none; padding: 8px 16px; border-radius: 15px; cursor: pointer; font-size: 12px; transition: all 0.3s ease;">立方体</button>
-  <button class="model-btn" data-model="cone" style="background: rgba(255, 255, 255, 0.2); color: white; border: none; padding: 8px 16px; border-radius: 15px; cursor: pointer; font-size: 12px; transition: all 0.3s ease;">圆锥</button>
-  <button class="model-btn" data-model="cylinder" style="background: rgba(255, 255, 255, 0.2); color: white; border: none; padding: 8px 16px; border-radius: 15px; cursor: pointer; font-size: 12px; transition: all 0.3s ease;">圆柱</button>
+<!-- Vision Pro风格控制面板 -->
+<div id="control-panel" style="position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 1000;">
+  
+  <!-- 模型控制菜单 -->
+  <div class="vision-menu" id="model-menu-container" style="margin-bottom: 15px;">
+    <div class="menu-header" data-menu="model">
+      <span class="menu-title">模型</span>
+      <span class="menu-toggle">▼</span>
+    </div>
+    <div class="menu-content">
+      <div class="button-group">
+        <button class="control-btn active" data-model="torus" data-tooltip="圆环">🍩</button>
+        <button class="control-btn" data-model="sphere" data-tooltip="球体">🔮</button>
+        <button class="control-btn" data-model="cube" data-tooltip="立方体">📦</button>
+        <button class="control-btn" data-model="cone" data-tooltip="圆锥">🔺</button>
+        <button class="control-btn" data-model="cylinder" data-tooltip="圆柱">🥫</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 材质控制菜单 -->
+  <div class="vision-menu" id="material-menu-container">
+    <div class="menu-header" data-menu="material">
+      <span class="menu-title">材质</span>
+      <span class="menu-toggle">▼</span>
+    </div>
+    <div class="menu-content">
+      <div class="button-group">
+        <button class="control-btn active" data-material="chrome" data-tooltip="铬合金">✨</button>
+        <button class="control-btn" data-material="gold" data-tooltip="黄金">👑</button>
+        <button class="control-btn" data-material="copper" data-tooltip="铜">🔶</button>
+        <button class="control-btn" data-material="emerald" data-tooltip="翡翠">💚</button>
+        <button class="control-btn" data-material="ruby" data-tooltip="红宝石">❤️</button>
+        <button class="control-btn" data-material="sapphire" data-tooltip="蓝宝石">💙</button>
+      </div>
+    </div>
+  </div>
+
 </div>
 
+<!-- Vision Pro UI 样式 -->
 <style>
-  .model-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  /* Vision Pro 毛玻璃效果 */
+  .vision-menu {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 0;
+    min-width: 280px;
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
   }
-  
-  .model-btn.active {
-    background: #4CAF50 !important;
-    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.4);
+
+  .vision-menu:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+  }
+
+  .menu-header {
+    padding: 12px 20px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    transition: background 0.2s ease;
+  }
+
+  .menu-header:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .menu-title {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+  }
+
+  .menu-toggle {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 12px;
+    transition: transform 0.3s ease;
+  }
+
+  .menu-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .menu-content.expanded {
+    max-height: 100px;
+    padding: 15px 20px;
+  }
+
+  .button-group {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .control-btn {
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .control-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.05);
+  }
+
+  .control-btn.active {
+    background: rgba(76, 175, 80, 0.8);
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.4);
+  }
+
+  .control-btn.active:hover {
+    background: rgba(76, 175, 80, 0.9);
+  }
+
+  /* 工具提示 */
+  .control-btn::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    margin-bottom: 5px;
+  }
+
+  .control-btn:hover::after {
+    opacity: 1;
+  }
+
+  /* 响应式设计 */
+  @media (max-width: 600px) {
+    .vision-menu {
+      min-width: 240px;
+    }
+    
+    .control-btn {
+      width: 38px;
+      height: 38px;
+      font-size: 14px;
+    }
   }
 </style>
 
@@ -51,14 +205,44 @@
     // 启用渲染器的交互功能
     renderer.domElement.style.touchAction = 'none';
     
-    // 创建材质（复用材质以提高性能）
-    const material = new THREE.MeshStandardMaterial({ 
-      roughness: 0.1,
-      metalness: 0.9
-    }); // 使用标准材质以获得更好的HDR效果
+    // 材质配置
+    const materials = {
+      chrome: new THREE.MeshStandardMaterial({ 
+        roughness: 0.1,
+        metalness: 0.9,
+        color: 0xE8E8E8
+      }),
+      gold: new THREE.MeshStandardMaterial({ 
+        roughness: 0.2,
+        metalness: 0.8,
+        color: 0xFFD700
+      }),
+      copper: new THREE.MeshStandardMaterial({ 
+        roughness: 0.3,
+        metalness: 0.7,
+        color: 0xB87333
+      }),
+      emerald: new THREE.MeshStandardMaterial({ 
+        roughness: 0.1,
+        metalness: 0.3,
+        color: 0x50C878
+      }),
+      ruby: new THREE.MeshStandardMaterial({ 
+        roughness: 0.1,
+        metalness: 0.3,
+        color: 0xE0115F
+      }),
+      sapphire: new THREE.MeshStandardMaterial({ 
+        roughness: 0.1,
+        metalness: 0.3,
+        color: 0x0F52BA
+      })
+    };
     
-    // 当前显示的网格对象
+    // 当前状态
     let currentMesh = null;
+    let currentModel = 'torus';
+    let currentMaterial = 'chrome';
     
     // 创建不同的几何模型
     const createGeometry = (type) => {
@@ -78,30 +262,62 @@
       }
     };
     
-    // 切换模型函数
-    const switchModel = (modelType) => {
-      // 移除当前模型
+    // 更新模型和材质
+    const updateModel = () => {
       if (currentMesh) {
         scene.remove(currentMesh);
         currentMesh.geometry.dispose();
       }
       
-      // 创建新模型
-      const geometry = createGeometry(modelType);
-      currentMesh = new THREE.Mesh(geometry, material);
+      const geometry = createGeometry(currentModel);
+      currentMesh = new THREE.Mesh(geometry, materials[currentMaterial]);
       scene.add(currentMesh);
+    };
+    
+    // 切换模型
+    const switchModel = (modelType) => {
+      currentModel = modelType;
+      updateModel();
       
       // 更新按钮状态
-      document.querySelectorAll('.model-btn').forEach(btn => {
+      document.querySelectorAll('[data-model]').forEach(btn => {
         btn.classList.remove('active');
-        btn.style.background = 'rgba(255, 255, 255, 0.2)';
       });
+      document.querySelector(`[data-model="${modelType}"]`).classList.add('active');
+    };
+    
+    // 切换材质
+    const switchMaterial = (materialType) => {
+      currentMaterial = materialType;
+      updateModel();
       
-      const activeBtn = document.querySelector(`[data-model="${modelType}"]`);
-      if (activeBtn) {
-        activeBtn.classList.add('active');
-        activeBtn.style.background = '#4CAF50';
-      }
+      // 更新按钮状态
+      document.querySelectorAll('[data-material]').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.querySelector(`[data-material="${materialType}"]`).classList.add('active');
+    };
+    
+    // 菜单折叠功能
+    const initMenuToggle = () => {
+      document.querySelectorAll('.menu-header').forEach(header => {
+        header.addEventListener('click', () => {
+          const menuType = header.getAttribute('data-menu');
+          const content = header.nextElementSibling;
+          const toggle = header.querySelector('.menu-toggle');
+          
+          // 切换折叠状态
+          if (content.classList.contains('expanded')) {
+            content.classList.remove('expanded');
+            toggle.textContent = '▼';
+            toggle.style.transform = 'rotate(0deg)';
+          } else {
+            content.classList.add('expanded');
+            toggle.textContent = '▲';
+            toggle.style.transform = 'rotate(180deg)';
+          }
+        });
+      });
     };
     
     // 创建水面
@@ -163,14 +379,22 @@
     // 水面动画速度控制
     const waterAnimationSpeed = 0.2; // 调整这个值来控制水面动画速度，1.0为默认速度
     
-    // 初始化默认模型
-    switchModel('torus');
+    // 初始化场景
+    updateModel();
+    initMenuToggle();
     
-    // 添加事件监听器到模型切换按钮
-    document.querySelectorAll('.model-btn').forEach(btn => {
+    // 添加事件监听器
+    document.querySelectorAll('[data-model]').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const modelType = e.target.getAttribute('data-model');
         switchModel(modelType);
+      });
+    });
+    
+    document.querySelectorAll('[data-material]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const materialType = e.target.getAttribute('data-material');
+        switchMaterial(materialType);
       });
     });
     
@@ -210,10 +434,8 @@
       window.removeEventListener('resize', handleResize);
       controls.dispose(); // 清理控制器
       
-      // 清理模型切换事件监听器
-      document.querySelectorAll('.model-btn').forEach(btn => {
-        btn.removeEventListener('click', () => {});
-      });
+      // 清理所有材质
+      Object.values(materials).forEach(material => material.dispose());
     };
   };
   
