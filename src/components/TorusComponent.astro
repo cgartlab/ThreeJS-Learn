@@ -81,6 +81,11 @@
     const hdrTexture = await rgbeLoader.loadAsync('/threejs-learn/hdr/default.hdr');
     hdrTexture.mapping = THREE.EquirectangularReflectionMapping;
     
+    // 配置渲染器的色调映射以修正曝光度
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 0.6; // 降低曝光度值，让HDR环境贴图不过曝
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    
     // 将HDR贴图设置为场景环境贴图
     scene.environment = hdrTexture;
     scene.background = hdrTexture;
