@@ -30,18 +30,67 @@
     const geometry = new THREE.TorusGeometry(1, 0.4, 16, 100);
     
     // 创建材质
-    const material = new THREE.MeshNormalMaterial(); // 使用法向量材质以获得彩色效果
+    const material = new THREE.MeshStandardMaterial({ 
+      roughness: 0.1,
+      metalness: 0.9
+    }); // 使用标准材质以获得更好的HDR效果
     
     // 创建网格
     const torus = new THREE.Mesh(geometry, material);
     scene.add(torus);
+    
+    // 创建水面
+    const waterGeometry = new THREE.PlaneGeometry(1000, 1000);
+    
+    // 导入Water类
+    const { Water } = await import('three/examples/jsm/objects/Water.js');
+    
+    // 创建水面对象
+    const water = new Water(
+      waterGeometry,
+      {
+        textureWidth: 512,
+        textureHeight: 512,
+        waterNormals: new THREE.TextureLoader().load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/waternormals.jpg', function(texture) {
+          texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+        }),
+        sunDirection: new THREE.Vector3(),
+        sunColor: 0xffffff,
+        waterColor: 0x001e0f,
+        distortionScale: 1.7,
+        fog: scene.fog !== undefined
+      }
+    );
+    
+    // 调整水面位置和旋转
+    water.rotation.x = -Math.PI / 2;
+    water.position.y = -3;
+    scene.add(water);
+    
+    // 加载HDR环境贴图
+    const { RGBELoader } = await import('three/examples/jsm/loaders/RGBELoader.js');
+    const rgbeLoader = new RGBELoader();
+    
+    // 设置HDR贴图路径
+    const hdrTexture = await rgbeLoader.loadAsync('/hdr/default.hdr');
+    hdrTexture.mapping = THREE.EquirectangularReflectionMapping;
+    
+    // 将HDR贴图设置为场景环境贴图
+    scene.environment = hdrTexture;
+    scene.background = hdrTexture;
+    
+    // 水面动画速度控制
+    const waterAnimationSpeed = 0.2; // 调整这个值来控制水面动画速度，1.0为默认速度
     
     // 动画函数
     const animate = () => {
       requestAnimationFrame(animate);
       
       // 使圆环沿Y轴缓慢旋转
-      torus.rotation.y += 0.01;
+      torus.rotation.y += 0.005;
+      
+      // 更新水面动画
+      water.material.uniforms["time"].value += (1.0 / 60.0) * waterAnimationSpeed;
       
       // 渲染场景
       renderer.render(scene, camera);
