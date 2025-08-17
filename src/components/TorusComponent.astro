@@ -195,15 +195,23 @@
     camera.position.z = 5;
     
     // 创建渲染器
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(0x1a1a1a); // 设置背景色为深灰色
     
-    // 将渲染器添加到页面
-    document.getElementById('torus-container').appendChild(renderer.domElement);
-    
     // 启用渲染器的交互功能
     renderer.domElement.style.touchAction = 'none';
+    
+    // 配置渲染器以提高渲染质量
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 0.6; // 降低曝光度值，让HDR环境贴图不过曝
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    
+    // 将渲染器添加到页面
+    document.getElementById('torus-container').appendChild(renderer.domElement);
     
     // 材质配置
     const materials = {
@@ -332,7 +340,7 @@
       {
         textureWidth: 512,
         textureHeight: 512,
-        waterNormals: new THREE.TextureLoader().load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/waternormals.jpg', function(texture) {
+        waterNormals: new THREE.TextureLoader().load('https://cdn.jsdelivr.net/gh/mrdoob/three.js@master/examples/textures/waternormals.jpg', function(texture) {
           texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
         }),
         sunDirection: new THREE.Vector3(),
