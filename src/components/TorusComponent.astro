@@ -78,7 +78,7 @@
     const rgbeLoader = new RGBELoader();
     
     // 设置HDR贴图路径
-    const hdrTexture = await rgbeLoader.loadAsync('/hdr/default.hdr');
+    const hdrTexture = await rgbeLoader.loadAsync('/threejs-learn/hdr/default.hdr');
     hdrTexture.mapping = THREE.EquirectangularReflectionMapping;
     
     // 将HDR贴图设置为场景环境贴图
