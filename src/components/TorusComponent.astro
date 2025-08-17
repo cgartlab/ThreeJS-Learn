@@ -26,6 +26,9 @@
     // 将渲染器添加到页面
     document.getElementById('torus-container').appendChild(renderer.domElement);
     
+    // 启用渲染器的交互功能
+    renderer.domElement.style.touchAction = 'none';
+    
     // 创建圆环几何体
     const geometry = new THREE.TorusGeometry(1, 0.4, 16, 100);
     
@@ -67,6 +70,9 @@
     water.position.y = -3;
     scene.add(water);
     
+    // 导入OrbitControls
+    const { OrbitControls } = await import('three/examples/jsm/controls/OrbitControls.js');
+    
     // 加载HDR环境贴图
     const { RGBELoader } = await import('three/examples/jsm/loaders/RGBELoader.js');
     const rgbeLoader = new RGBELoader();
@@ -79,12 +85,23 @@
     scene.environment = hdrTexture;
     scene.background = hdrTexture;
     
+    // 创建控制器
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true; // 启用阻尼效果
+    controls.dampingFactor = 0.05; // 阻尼系数
+    controls.screenSpacePanning = false; // 禁用屏幕空间平移
+    controls.minDistance = 1; // 最小缩放距离
+    controls.maxDistance = 50; // 最大缩放距离
+    
     // 水面动画速度控制
     const waterAnimationSpeed = 0.2; // 调整这个值来控制水面动画速度，1.0为默认速度
     
     // 动画函数
     const animate = () => {
       requestAnimationFrame(animate);
+      
+      // 更新控制器
+      controls.update();
       
       // 使圆环沿Y轴缓慢旋转
       torus.rotation.y += 0.005;
@@ -111,6 +128,7 @@
     // 组件卸载时清理事件监听器
     return () => {
       window.removeEventListener('resize', handleResize);
+      controls.dispose(); // 清理控制器
     };
   };
   
